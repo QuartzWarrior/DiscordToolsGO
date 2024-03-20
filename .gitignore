@@ -23,3 +23,6 @@ go.work
 tokens.txt
 good_tokens.txt
 output.txt
+list.txt
+available.txt
+unavailable.txt
