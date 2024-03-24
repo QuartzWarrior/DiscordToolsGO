@@ -5,9 +5,30 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/valyala/fasthttp"
 )
+
+func runner(code string, fileGoodCodes *os.File) {
+	req := fasthttp.AcquireRequest()
+	req.Header.SetMethod("GET")
+	req.SetRequestURI(fmt.Sprintf("https://discordapp.com/api/v9/entitlements/gift-codes/%s?with_application=false&with_subscription_plan=true", code))
+	resp := fasthttp.AcquireResponse()
+	fasthttp.Do(req, resp)
+	if resp.StatusCode() == 200 {
+		fmt.Println("Valid code:", code)
+		_, err := fileGoodCodes.WriteString(code + "\n")
+		if err != nil {
+			fmt.Println("Error writing to file:", err)
+			return
+		}
+	} else {
+		fmt.Println("Invalid code:", code)
+	}
+	fasthttp.ReleaseRequest(req)
+	fasthttp.ReleaseResponse(resp)
+}
 
 func main() {
 	file, err := os.OpenFile("codes.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
@@ -53,29 +74,21 @@ func main() {
 		return
 	}
 
+	var wg sync.WaitGroup
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		code := strings.TrimSpace(scanner.Text())
 		if code == "" {
 			continue
 		}
-		req := fasthttp.AcquireRequest()
-		req.Header.SetMethod("GET")
-		req.SetRequestURI(fmt.Sprintf("https://discordapp.com/api/v9/entitlements/gift-codes/%s?with_application=false&with_subscription_plan=true", code))
-		resp := fasthttp.AcquireResponse()
-		fasthttp.Do(req, resp)
-		if resp.StatusCode() == 200 {
-			fmt.Println("Valid code:", code)
-			_, err = fileGoodCodes.WriteString(code + "\n")
-			if err != nil {
-				fmt.Println("Error writing to file:", err)
-				return
-			}
-		} else {
-			fmt.Println("Invalid code:", code)
-		}
-		fasthttp.ReleaseRequest(req)
-		fasthttp.ReleaseResponse(resp)
+		wg.Add(1)
+		go func(code string) {
+			defer wg.Done()
+			runner(code, fileGoodCodes)
+		}(code)
 	}
+
+	wg.Wait()
 
 }
