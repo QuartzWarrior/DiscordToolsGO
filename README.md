@@ -18,6 +18,10 @@ This program validates Discord tokens by making a GET request to the Discord API
 
 This program checks the availability of Discord vanity URLs by making a GET request to the Discord API. Vanities are classified as "available" or "taken" based on the API response. Run with `go run main.go`.
 
+## DiscordNitroChecker
+
+This program validates Discord Nitro gift codes by making a GET request to the Discord API. Codes are classified as "valid" or "invalid" based on the API response. Run with `go run main.go`.
+
 ## Usage
 
 Ensure all tokens are valid Discord tokens with DiscordTokenChecker. If `tokens.txt` is empty, you will be prompted to input tokens when running the programs. Use the command `go run main.go` to run a program.

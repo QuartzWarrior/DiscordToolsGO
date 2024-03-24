@@ -43,6 +43,13 @@ func main() {
 		}
 	}
 
+	fileGoodTokens, err := os.OpenFile("good_tokens.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+	defer fileGoodTokens.Close()
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		token := strings.TrimSpace(scanner.Text())
@@ -65,12 +72,6 @@ func main() {
 
 		if statusCode == 200 {
 			fmt.Println("Good token:", token)
-			fileGoodTokens, err := os.OpenFile("good_tokens.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-			if err != nil {
-				fmt.Println("Error opening file:", err)
-				return
-			}
-			defer fileGoodTokens.Close()
 			_, err = fileGoodTokens.WriteString(token + "\n")
 			if err != nil {
 				fmt.Println("Error writing to file:", err)
