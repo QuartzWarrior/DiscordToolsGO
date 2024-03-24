@@ -22,6 +22,10 @@ This program checks the availability of Discord vanity URLs by making a GET requ
 
 This program validates Discord Nitro gift codes by making a GET request to the Discord API. Codes are classified as "valid" or "invalid" based on the API response. Run with `go run main.go`.
 
+## DiscordPasswordChanger
+
+This Go program changes the password of Discord accounts using account tokens. It makes a PATCH request to the Discord API and confirms the password change based on the API response. Run with `go run main.go`.
+
 ## Usage
 
 Ensure all tokens are valid Discord tokens with DiscordTokenChecker. If `tokens.txt` is empty, you will be prompted to input tokens when running the programs. Use the command `go run main.go` to run a program.
